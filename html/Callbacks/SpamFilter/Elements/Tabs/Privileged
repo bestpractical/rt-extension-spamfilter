@@ -1,0 +1,22 @@
+<%init>
+return unless $session{'CurrentUser'}->HasRight( Right => 'AdminUsers', Object => RT->System );
+Menu->child("tools")->child( "spam_filter", title => loc("Spam Filter"), path => "/Tools/SpamFilter/List.html");
+
+my $request_path = $HTML::Mason::Commands::r->path_info;
+$request_path =~ s!/{2,}!/!g;
+if ( $request_path =~ m{/Tools/SpamFilter/} ) {
+    my $tabs = PageMenu();
+    $tabs->child( new => title => loc('Spams'), path => "/Tools/SpamFilter/List.html" );
+    $tabs->child( resolved => title => loc('Resolved List'), path => "/Tools/SpamFilter/List.html?Status=resolved" );
+    $tabs->child( deleted => title => loc('Deleted List'), path => "/Tools/SpamFilter/List.html?Status=deleted" );
+    if ( ( $DECODED_ARGS->{'id'} || '' ) =~ /^(\d+)$/ ) {
+        my $id  = $1;
+        require RT::Spam;
+        my $email = RT::Spam->new( $session{'CurrentUser'} );
+        $email->Load($id);
+        if ( $email->id ) {
+            $tabs->child( display => title => loc('Display'), path => "/Tools/SpamFilter/Display.html?id=" . $id );
+        }
+    }
+}
+</%init>

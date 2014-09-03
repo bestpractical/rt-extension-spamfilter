@@ -1,0 +1,11 @@
+CREATE SEQUENCE spams_id_seq;
+create table Spams (
+  id integer default nextval('spams_id_seq'),
+  Status varchar(255) default 'new',
+  Headers text null,
+  Content text null,
+  Score integer null default 0,
+  Creator integer not null default 0,
+  Created timestamp null,
+  primary key (id)
+);

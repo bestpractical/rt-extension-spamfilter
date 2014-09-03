@@ -1,0 +1,97 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+
+<div class="spams">
+<& /Elements/CollectionList, 
+    Collection => $emails,
+    AllowSorting => 1,
+    OrderBy => $OrderBy,
+    Order => $Order,
+    Rows => $Rows,
+    Page => $Page,
+    Format => $Format,
+   &>
+</div>
+
+<%init>
+
+$Format ||= qq{'<a href="__WebPath__/Tools/SpamFilter/Display.html?id=__id__">__id__</a>/TITLE:#','<a href="__WebPath__/Tools/SpamFilter/Display.html?id=__id__">__Subject__</a>',__From__,__To__,__Status__,__Date__,__Score__};
+$Order    ||= 'ASC';
+$OrderBy  ||= 'id';
+
+$Rows ||= 50;
+$Page = 1 unless $Page && $Page > 0;
+
+use RT::Spams;
+my $emails = RT::Spams->new($session{'CurrentUser'}) ;
+$emails->Limit(FIELD => 'Status', VALUE => $Status );
+$emails->OrderBy( FIELD => $OrderBy, ORDER => $Order );
+$emails->RowsPerPage( $Rows );
+$emails->GotoPage( $Page - 1 );
+
+my $title;
+if ( $Status eq 'new' ) {
+    $title = loc('Spam Filter');
+}
+elsif ( $Status eq 'resolved' ) {
+    $title = loc('Spam Resolved List');
+}
+else {
+    $title = loc('Spam Deleted List');
+}
+</%init>
+<%ARGS>
+$Format => undef 
+$Rows => undef
+$Page => 1
+$OrderBy => undef
+$Order => undef
+$Status => 'new'
+</%ARGS>

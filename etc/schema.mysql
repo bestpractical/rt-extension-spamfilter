@@ -1,0 +1,9 @@
+create table Spams (
+  id integer primary key auto_increment,
+  Status varchar(255) default 'new',
+  Headers text null,
+  Content text null,
+  Score integer null default 0,
+  Creator integer null default 0,
+  Created datetime null
+) ENGINE=InnoDB CHARACTER SET utf8;
