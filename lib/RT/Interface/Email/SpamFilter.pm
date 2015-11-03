@@ -96,9 +96,9 @@ sub GetCurrentUser {
         if ( !$ret ) {
             RT->Logger->error( "Failed to create Spam record: $message" );
         }
+        FAILURE("Spammed");
     }
-
-    SUCCESS();
+    return undef; # pass to the next plugin
 }
 
 1;
