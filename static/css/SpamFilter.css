@@ -2,6 +2,12 @@ div.actions {
     text-align: center;
 }
 
+div.actions button {
+    margin-top: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
 div.actions button a {
     color: white;
 }
