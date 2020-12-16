@@ -79,9 +79,7 @@
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Content'), &>
-<pre>
-<% $email->Content %>
-</pre>
+% $m->comp('/Elements/ShowMessageStanza', Message     => $email->Content, );
 </&>
 
 <%init>
