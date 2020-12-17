@@ -1,4 +1,8 @@
 Revision history for RT-Extension-SpamFilter
 
-0.01 [Release Date]
+0.02 2020-12-17
+ - Updates for RT 5
+ - Improve documentation
+
+0.01 2015-11-03
  - Initial version
