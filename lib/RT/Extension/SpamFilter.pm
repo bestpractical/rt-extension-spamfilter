@@ -98,26 +98,46 @@ is shown below:
             Score => 20,
         },
         {
+            Field => 'X-Gm-Spam',
+            Regex => qr/1/,
+            Score => 30, # Trust spam header and flag as spam
+        },
+        {
             Field => 'Body',
             Regex => qr/download the attachment/i,
             Score => 10
         }
     );
 
+=head2 C<@SpamFilters>
+
 The C<@SpamFilters> array is an array of hashes.  Each hash
 must contain the following keys:
 
 =over
 
-=item C<Field> is either 'Body' or the name of an email header.
+=item C<Field>
 
-=item C<Regex> is a regular expression to apply to the email header named
-by C<Field> (or the email body if C<Field> is 'Body')
+Either 'Body' or the name of an email header.
 
-=item C<Score> is a number indicating how many points to add to the
+=item C<Regex>
+
+A regular expression to apply to the email header named
+by C<Field> (or the email body if C<Field> is 'Body').
+
+=item C<Score>
+
+A number indicating how many points to add to the
 spam score if the rule matches.
 
 =back
+
+You can use the configuration above to check for provided spam headers
+as shown in the example above. However, any score provided as a value in a
+header currently isn't used. The configuration will detect the
+presence of the spam header and then add the score you configure.
+
+=head2 C<$SpamFilterThreshold>
 
 The C<$SpamFilterThreshold> is the score above which an incoming message
 is considered to be spam and placed in the spam list.

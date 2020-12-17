@@ -1,0 +1,104 @@
+NAME
+    RT-Extension-SpamFilter - Spam Filter
+
+DESCRIPTION
+    This is for public RT systems, where everyone can create tickets. Admins
+    can define a list of rules, and if an email comes from a non-existing
+    user and reached the score threshold(scored by the rules), it will be
+    marked as spam and no tickets will be created.
+
+    Admins can manually handle those spams from /Tools/SpamFilter/List.html
+
+RT VERSION
+    Works with RT 4.0, 4.2, 4.4 and 5.0.
+
+INSTALLATION
+    perl Makefile.PL
+    make
+    make install
+        May need root permissions
+
+    make initdb
+        Only run this the first time you install this module.
+
+        If you run this twice, you may end up with duplicate data in your
+        database.
+
+        If you are upgrading this module, check for upgrading instructions
+        in case changes need to be made to your database.
+
+    Set up spam filter rules (see "CONFIGURATION" for details.)
+    Clear your mason cache
+            rm -rf /opt/rt5/var/mason_data/obj
+
+    Restart your webserver
+
+CONFIGURATION
+    Edit your /opt/rt5/etc/RT_SiteConfig.pm; a sample configuration is shown
+    below:
+
+        Plugin('RT::Extension::SpamFilter');
+        Set(@MailPlugins, 'SpamFilter', 'Auth::MailFrom');
+        Set($SpamFilterThreshold, 30);
+        Set(
+            @SpamFilters,
+            {
+                Field => 'Subject',
+                Regex => qr/urgent reply/i,
+                Score => 20,
+            },
+            {
+                Field => 'X-Gm-Spam',
+                Regex => qr/1/,
+                Score => 30, # Trust spam header and flag as spam
+            },
+            {
+                Field => 'Body',
+                Regex => qr/download the attachment/i,
+                Score => 10
+            }
+        );
+
+  @SpamFilters
+    The @SpamFilters array is an array of hashes. Each hash must contain the
+    following keys:
+
+    Field
+        Either 'Body' or the name of an email header.
+
+    Regex
+        A regular expression to apply to the email header named by Field (or
+        the email body if Field is 'Body').
+
+    Score
+        A number indicating how many points to add to the spam score if the
+        rule matches.
+
+    You can use the configuration above to check for provided spam headers
+    as shown in the example above. However, any score provided as a value in
+    a header currently isn't used. The configuration will detect the
+    presence of the spam header and then add the score you configure.
+
+  $SpamFilterThreshold
+    The $SpamFilterThreshold is the score above which an incoming message is
+    considered to be spam and placed in the spam list.
+
+AUTHOR
+    Best Practical Solutions, LLC <modules@bestpractical.com>
+
+BUGS
+    All bugs should be reported via email to
+
+        L<bug-RT-Extension-SpamFilter@rt.cpan.org|mailto:bug-RT-Extension-SpamFilter@rt.cpan.org>
+
+    or via the web at
+
+        L<rt.cpan.org|http://rt.cpan.org/Public/Dist/Display.html?Name=RT-Extension-SpamFilter>.
+
+LICENSE AND COPYRIGHT
+    This software is Copyright (c) 2014 Best Practical Solutions, LLC.
+
+    This is free software, licensed under:
+
+      The GNU General Public License, Version 2, June 1991
+
