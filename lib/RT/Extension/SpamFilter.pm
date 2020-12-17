@@ -48,7 +48,7 @@ Admins can manually handle those spams from /Tools/SpamFilter/List.html
 
 =head1 RT VERSION
 
-Works with RT 4.0 and later
+Works with RT 4.0, 4.2, 4.4 and 5.0.
 
 =head1 INSTALLATION
 
@@ -72,7 +72,20 @@ in your database.
 If you are upgrading this module, check for upgrading instructions
 in case changes need to be made to your database.
 
-=item Edit your F</opt/rt4/etc/RT_SiteConfig.pm>
+=item Set up spam filter rules (see L</"CONFIGURATION"> for details.)
+
+=item Clear your mason cache
+
+    rm -rf /opt/rt5/var/mason_data/obj
+
+=item Restart your webserver
+
+=back
+
+=head1 CONFIGURATION
+
+Edit your F</opt/rt5/etc/RT_SiteConfig.pm>; a sample configuration
+is shown below:
 
     Plugin('RT::Extension::SpamFilter');
     Set(@MailPlugins, 'SpamFilter', 'Auth::MailFrom');
@@ -91,14 +104,23 @@ in case changes need to be made to your database.
         }
     );
 
+The C<@SpamFilters> array is an array of hashes.  Each hash
+must contain the following keys:
 
-=item Clear your mason cache
+=over
 
-    rm -rf /opt/rt4/var/mason_data/obj
+=item C<Field> is either 'Body' or the name of an email header.
 
-=item Restart your webserver
+=item C<Regex> is a regular expression to apply to the email header named
+by C<Field> (or the email body if C<Field> is 'Body')
+
+=item C<Score> is a number indicating how many points to add to the
+spam score if the rule matches.
 
 =back
+
+The C<$SpamFilterThreshold> is the score above which an incoming message
+is considered to be spam and placed in the spam list.
 
 =head1 AUTHOR
 

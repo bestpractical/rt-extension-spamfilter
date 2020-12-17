@@ -46,32 +46,32 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr class="id">
-    <td class="label"><&|/l&>id</&>:</td>
-    <td class="value"><%$Spam->id %></td>
-  </tr>
-  <tr class="status">
-    <td class="label"><&|/l&>Status</&>:</td>
-    <td class="value"><% loc($Spam->Status) %></td>
-  </tr>
-  <tr class="Subject">
-    <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="value"><% $Spam->GetHeader('Subject') || loc("(No subject)") %></td>
-  </tr>
-  <tr class="from">
-    <td class="label"><&|/l&>From</&>:</td>
-    <td class="value"><% $Spam->From %></td>
-  </tr>
-  <tr class="to">
-    <td class="label"><&|/l&>To</&>:</td>
-    <td class="value"><% $Spam->GetHeader('To') %></td>
-  </tr>
-  <tr class="date">
-    <td class="label"><&|/l&>Date</&>:</td>
-    <td class="value"><% $Spam->GetHeader('Date') %></td>
-  </tr>
-</table>
+<div>
+  <div class="id form-row">
+    <div class="label col-1"><&|/l&>id</&>:</div>
+    <div class="value col-11"><%$Spam->id %></div>
+  </div>
+  <div class="status form-row">
+    <div class="label col-1"><&|/l&>Status</&>:</div>
+    <div class="value col-11"><% loc($Spam->Status) %></div>
+  </div>
+  <div class="Subject form-row"">
+    <div class="label col-1"><&|/l&>Subject</&>:</div>
+    <div class="value col-11"><% $Spam->GetHeader('Subject') || loc("(No subject)") %></div>
+  </div>
+  <div class="from form-row"">
+    <div class="label col-1"><&|/l&>From</&>:</div>
+    <div class="value col-11"><% $Spam->From %></div>
+  </div>
+  <div class="to form-row"">
+    <div class="label col-1"><&|/l&>To</&>:</div>
+    <div class="value col-11"><% $Spam->GetHeader('To') %></div>
+  </div>
+  <div class="date form-row"">
+    <div class="label col-1"><&|/l&>Date</&>:</div>
+    <div class="value col-11"><% $Spam->GetHeader('Date') %></div>
+  </div>
+</div>
 <%ARGS>
 $Spam => undef
 </%ARGS>
