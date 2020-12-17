@@ -73,7 +73,7 @@
 </script>
 
 <& /Elements/ListActions, Actions => \@results &>
-
+<div id="spam-display-container" class="mx-auto max-width-md">
 <&| /Widgets/TitleBox, title => loc('The Basics'), &>
 <& /Tools/SpamFilter/Elements/ShowBasics, Spam => $email &>
 </&>
@@ -81,7 +81,7 @@
 <&| /Widgets/TitleBox, title => loc('Content'), &>
 % $m->comp('/Elements/ShowMessageStanza', Message     => $email->Content, );
 </&>
-
+</div>
 <%init>
 
 Abort( loc("No spam specified") ) unless $ARGS{id};
