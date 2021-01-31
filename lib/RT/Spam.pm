@@ -94,6 +94,7 @@ sub Create {
         Headers => $headers,
         Content => encode_base64($args{Message}->as_string),
         Score => $args{Score},
+        map { $_ => $args{$_} } qw/Queue Action Ticket/,
     );
 
     unless ( $id ) {
@@ -197,6 +198,12 @@ sub _CoreAccessible {
 		{read => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'longtext', default => ''},
         Score =>
 		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+        Queue =>
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+        Action =>
+		{read => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        Ticket =>
+		{read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Creator =>
 		{read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created =>

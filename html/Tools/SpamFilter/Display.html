@@ -106,7 +106,11 @@ if ( $Action ) {
             EmailAddress => $address,
             Comments     => 'Created by SpamFilter',
         );
-        my ( $ret, $msg, $ticket) = RT::Interface::Email::Gateway( { message => $email->Content } );
+        my ( $ret, $msg, $ticket ) = RT::Interface::Email::Gateway(
+            {   message => $email->Content,
+                map { lc $_ => $email->$_ } grep { $email->$_ } qw/Queue Action Ticket/,
+            }
+        );
         if ( $ret == 1 && $ticket ) {
             $email->SetStatus('resolved');
             push @results, $msg;

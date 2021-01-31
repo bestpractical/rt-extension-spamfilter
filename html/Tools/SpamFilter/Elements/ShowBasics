@@ -71,6 +71,12 @@
     <div class="label col-1"><&|/l&>Date</&>:</div>
     <div class="value col-11"><% $Spam->GetHeader('Date') %></div>
   </div>
+% for my $field ( qw/Queue Action Ticket/ ) {
+  <div class="date form-row"">
+    <div class="label col-1"><% loc($field) %>:</div>
+    <div class="value col-11"><% $Spam->$field // '' %></div>
+  </div>
+% }
 </div>
 <%ARGS>
 $Spam => undef
