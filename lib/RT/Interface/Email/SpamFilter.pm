@@ -95,7 +95,6 @@ sub GetCurrentUser {
         my $email = RT::Spam->new( RT->SystemUser );
         my ( $ret, $message ) = $email->Create(
             Message    => $args{Message},
-            RawMessage => ${ $args{RawMessage} },
             Status     => 'new',
             Score      => $score,
             Queue      => $args{Queue}->Id,
