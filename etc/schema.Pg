@@ -5,6 +5,9 @@ create table Spams (
   Headers text null,
   Content text null,
   Score integer null default 0,
+  Queue integer null,
+  Action varchar(255) null,
+  Ticket integer null,
   Creator integer not null default 0,
   Created timestamp null,
   primary key (id)

@@ -1,0 +1,43 @@
+From efdb343d37525b07d929581db8ef4215f53f6295 Mon Sep 17 00:00:00 2001
+From: sunnavy <sunnavy@bestpractical.com>
+Date: Tue, 2 Feb 2021 03:32:53 +0800
+Subject: [PATCH] Pass action info to GetCurrentUser for email interface
+
+Usually GetCurrentUser doen't need to know action. This is initially for
+SpamFilter so it could get enough info to re-route emails back to RT's
+normal workflow.
+---
+ lib/RT/Interface/Email.pm | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/lib/RT/Interface/Email.pm b/lib/RT/Interface/Email.pm
+index 7255b14e8a..f1cbb8df8d 100644
+--- a/lib/RT/Interface/Email.pm
++++ b/lib/RT/Interface/Email.pm
+@@ -229,6 +229,7 @@ sub Gateway {
+         RawMessageRef => \$args{message},
+         Ticket        => $SystemTicket,
+         Queue         => $SystemQueueObj,
++        RawAction     => $args{action},
+     );
+ 
+     # We only care about ACLs on the _first_ action, as later actions
+@@ -334,6 +335,7 @@ sub GetCurrentUser {
+         RawMessageRef => undef,
+         Ticket        => undef,
+         Queue         => undef,
++        RawAction     => undef,
+         @_,
+     );
+ 
+@@ -344,6 +346,7 @@ sub GetCurrentUser {
+             RawMessageRef => $args{RawMessageRef},
+             Ticket        => $args{Ticket},
+             Queue         => $args{Queue},
++            RawAction     => $args{RawAction},
+         );
+         return $CurrentUser if $CurrentUser and $CurrentUser->id;
+     }
+-- 
+2.24.3 (Apple Git-128)
+

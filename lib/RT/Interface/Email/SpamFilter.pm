@@ -67,7 +67,9 @@ RT::Interface::Email::SpamFilter
 
 sub GetCurrentUser {
     my %args = (
-        Message => undef,
+        Message   => undef,
+        Queue     => undef,
+        RawAction => undef,
         @_,
     );
 
@@ -91,8 +93,14 @@ sub GetCurrentUser {
     my ( $score ) = RT::Extension::SpamFilter->MessageScore($args{'Message'});
     if ( $score >= RT->Config->Get( 'SpamFilterThreshold' ) || 0 ) {
         my $email = RT::Spam->new( RT->SystemUser );
-        my ( $ret, $message ) =
-          $email->Create( Message => $args{Message}, RawMessage => ${ $args{RawMessage} }, Status => 'new', Score => $score );
+        my ( $ret, $message ) = $email->Create(
+            Message    => $args{Message},
+            Status     => 'new',
+            Score      => $score,
+            Queue      => $args{Queue}->Id,
+            Action     => $args{RawAction},
+            Ticket     => $args{Ticket}->Id,
+        );
         if ( !$ret ) {
             RT->Logger->error( "Failed to create Spam record: $message" );
         }
