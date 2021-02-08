@@ -3,7 +3,7 @@ use warnings;
 
 package RT::Extension::SpamFilter;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub MessageScore {
     my $class = shift;

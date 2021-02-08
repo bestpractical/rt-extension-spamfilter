@@ -1,5 +1,8 @@
 Revision history for RT-Extension-SpamFilter
 
+0.03 2021-02-08
+ - Store Queue/Action/Ticket info to correctly route back to RT
+
 0.02 2020-12-17
  - Updates for RT 5
  - Improve documentation
