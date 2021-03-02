@@ -64,7 +64,7 @@
 <script type="text/javascript">
     jQuery( function() {
         jQuery('div.actions button.create_user').click( function () {
-            window.location.href = '?id=<% $email->id %>;Action=CreateUser';
+            window.location.href = '?id=<% $email->id %>;Action=Release';
         });
         jQuery('div.actions button.discard').click( function () {
             window.location.href = '?id=<% $email->id %>;Action=Delete';
@@ -95,33 +95,18 @@ my @results;
 
 if ( $Action ) {
     if ( $Action eq 'Delete' ) {
-        my ($ret, $msg) = $email->SetStatus('deleted');
+        my ($ret, $msg) = $email->Delete();
         push @results, $msg;
     }
-    elsif ( $Action eq 'CreateUser' ) { 
-        my $user = RT::User->new($session{CurrentUser});
-        my ( $address, $name ) = RT::Interface::Email::ParseSenderAddressFromHead( $email->MIMEEntity->head );
-        $user->LoadOrCreateByEmail(
-            RealName     => $name,
-            EmailAddress => $address,
-            Comments     => 'Created by SpamFilter',
-        );
-        my ( $ret, $msg, $ticket ) = RT::Interface::Email::Gateway(
-            {   message => $email->Content,
-                map { lc $_ => $email->$_ } grep { $email->$_ } qw/Queue Action Ticket/,
-            }
-        );
+    elsif ( $Action eq 'Release' ) {
+        my ($ret, $msg, $ticket) = $email->Release(\%session);
+        push @results, $msg;
         if ( $ret == 1 && $ticket ) {
-            $email->SetStatus('resolved');
-            push @results, $msg;
             MaybeRedirectForResults(
                 Actions   => \@results,
                 Path      => "/Ticket/Display.html",
                 Arguments => { id => $ticket->id },
             );
-        }
-        else {
-            push @results, $msg;
         }
     }
 }

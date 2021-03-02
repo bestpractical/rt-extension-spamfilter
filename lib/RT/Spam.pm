@@ -211,6 +211,53 @@ sub _CoreAccessible {
    }
 };
 
+=head2 Delete
+
+Mark a potential spam as deleted (ie, confirm it as spam.)  Returns
+the usual (success, msg) pair.
+
+=cut
+sub Delete
+{
+    my ($self) = @_;
+    return $self->SetStatus('deleted');
+}
+
+=head2 Release $session_hash
+
+Release a potential spam (ie, mark it as non-spam.)  Returns (success,
+msg, ticket) triplet.
+
+=cut
+sub Release
+{
+    my ($self, $session) = @_;
+
+    # FIXME: Eventually, we won't need to create a user because we'll
+    # have a proper way to indicate that this is a release spam,
+    # rather than relying on the existence of an RT::User for the
+    # sending address.  This will also eliminate the need
+    # to pass in a reference to %session.
+    my $user = RT::User->new($session->{CurrentUser});
+    my ( $address, $name ) = RT::Interface::Email::ParseSenderAddressFromHead( $self->MIMEEntity->head );
+    $user->LoadOrCreateByEmail(
+        RealName     => $name,
+        EmailAddress => $address,
+        Comments     => 'Created by SpamFilter',
+    );
+
+    my ( $ret, $msg, $ticket ) = RT::Interface::Email::Gateway(
+        {   message => $self->Content,
+            queue   => $self->Queue,
+            action  => $self->Action,
+            ticket  => $self->Ticket }
+    );
+    if ( $ret == 1 && $ticket ) {
+        $self->SetStatus('resolved');
+    }
+    return ($ret, $msg, $ticket);
+}
+
 RT::Base->_ImportOverlays();
 
 1;
