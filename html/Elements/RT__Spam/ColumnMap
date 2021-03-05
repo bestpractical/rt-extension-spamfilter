@@ -52,6 +52,26 @@ $Attr => undef
 
 
 <%once>
+
+# For readability, ncapsulate the button-generating code into a
+# function here rather than putting it inline in the big hash.
+my $buttons_sub = sub {
+    my ($email) = @_;
+
+    my $ret = '';
+    if ($email->Status ne 'resolved') {
+       $ret .= '<button type="button" class="create_user" name="Release-' . $email->id . '">' . loc('Not Spam') . '</button>';
+    }
+    if ($email->Status ne 'deleted') {
+        $ret .= '&nbsp;<button type="button" class="discard" name="Delete-' . $email->id . '">' . loc('Delete') . '</button>';
+    }
+
+    # Here's a magical thing... if you return a *reference* to a scalar,
+    # the result is not HTML-escaped.  If you just return a scalar, it is.
+    # Hence the \ before $ret.
+    return \$ret;
+};
+
 my $COLUMN_MAP;
 
 $COLUMN_MAP = {
@@ -90,6 +110,10 @@ $COLUMN_MAP = {
         attribute => 'Score',
         title     => 'Score', # loc
         value     => sub { return $_[0]->Score }
+    },
+    Disposition => {
+        title     => 'Disposition', #loc
+        value     => $buttons_sub,
     },
 };
 

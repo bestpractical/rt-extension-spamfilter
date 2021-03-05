@@ -48,6 +48,25 @@
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
+<script type="text/javascript">
+    jQuery( function() {
+        jQuery('button.create_user').click( function () {
+            url = new URL(window.location.href);
+            status = url.searchParams.get('Status') || 'new';
+            bits = this.name.split('-');
+            window.location.href = '?emailid=' + bits[1] + '&Action=' + bits[0] + '&Status=' + status;
+        });
+        jQuery('button.discard').click( function () {
+            url = new URL(window.location.href);
+            status = url.searchParams.get('Status') || 'new';
+            bits = this.name.split('-');
+            window.location.href = '?emailid=' + bits[1] + '&Action=' + bits[0] + '&Status=' + status;
+        });
+    });
+</script>
+
+<& /Elements/ListActions, actions => \@results &>
+
 <div class="spams">
 <& /Elements/CollectionList, 
     Collection => $emails,
@@ -62,7 +81,9 @@
 
 <%init>
 
-$Format ||= qq{'<a href="__WebPath__/Tools/SpamFilter/Display.html?id=__id__">__id__</a>/TITLE:#','<a href="__WebPath__/Tools/SpamFilter/Display.html?id=__id__">__Subject__</a>',__From__,__To__,__Status__,__Date__,__Score__};
+my @results;
+$Format ||= qq{'<a href="__WebPath__/Tools/SpamFilter/Display.html?id=__id__">__id__</a>/TITLE:#','<a href="__WebPath__/Tools/SpamFilter/Display.html?id=__id__">__Subject__</a>',__From__,__To__,__Status__,__Date__,__Score__,__Disposition__};
+
 $Order    ||= 'ASC';
 $OrderBy  ||= 'id';
 
@@ -70,6 +91,27 @@ $Rows ||= 50;
 $Page = 1 unless $Page && $Page > 0;
 
 use RT::Spams;
+use RT::Spam;
+
+if ($Action && $emailid) {
+    my $email = RT::Spam->new($session{'CurrentUser'}) ;
+    $email->Load($emailid);
+    if ($email->id) {
+        my ($ret, $msg, $ticket);
+        if ($Action eq 'Delete') {
+            ($ret, $msg) = $email->Delete();
+            if ($ret) {
+                push(@results, loc('Marked item [_1] as spam', $email->id));
+            }
+        } elsif ($Action eq 'Release') {
+            ($ret, $msg, $ticket) = $email->Release(\%session);
+            if ($ret) {
+                push(@results, loc('Marked item [_1] as non-spam and created ticket #[_2]', $email->id, $ticket->Id));
+            }
+        }
+    }
+}
+
 my $emails = RT::Spams->new($session{'CurrentUser'}) ;
 $emails->Limit(FIELD => 'Status', VALUE => $Status );
 $emails->OrderBy( FIELD => $OrderBy, ORDER => $Order );
@@ -94,4 +136,6 @@ $Page => 1
 $OrderBy => undef
 $Order => undef
 $Status => 'new'
+$Action => undef,
+$emailid => undef
 </%ARGS>
