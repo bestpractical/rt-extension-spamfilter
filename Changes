@@ -1,5 +1,9 @@
 Revision history for RT-Extension-SpamFilter
 
+0.04 2021-03-08
+ - Implement "Delete" and "Not Spam" buttons in each row of the list view
+ - Refactor Delete/Release code into methods so the code is reusable
+
 0.03 2021-02-08
  - Store Queue/Action/Ticket info to correctly route back to RT
 
