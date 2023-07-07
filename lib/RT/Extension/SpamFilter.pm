@@ -72,7 +72,7 @@ in your database.
 If you are upgrading this module, check for upgrading instructions
 in case changes need to be made to your database.
 
-=item Patch RT earlier than 5.0.2
+=item Patch RT earlier than 5.0.5
 
     patch -d /opt/rt5 -p1 < patches/0001-Pass-action-info-to-GetCurrentUser-for-email-interfa.patch
 
