@@ -1,5 +1,8 @@
 Revision history for RT-Extension-SpamFilter
 
+0.05 2023-07-10
+ - Pass search arguments to make OrderBy/Pagination really work
+
 0.04 2021-03-08
  - Implement "Delete" and "Not Spam" buttons in each row of the list view
  - Refactor Delete/Release code into methods so the code is reusable
