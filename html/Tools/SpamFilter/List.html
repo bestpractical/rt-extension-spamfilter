@@ -76,6 +76,9 @@
     Rows => $Rows,
     Page => $Page,
     Format => $Format,
+    Status => $Status,
+    sc => $ARGS{sc},
+    PassArguments => [qw/sc Rows Page Order OrderBy Format Status/],
    &>
 </div>
 
@@ -87,7 +90,7 @@ $Format ||= qq{'<a href="__WebPath__/Tools/SpamFilter/Display.html?id=__id__">__
 $Order    ||= 'ASC';
 $OrderBy  ||= 'id';
 
-$Rows ||= 50;
+$Rows ||= $ARGS{RowsPerPage} || 50;
 $Page = 1 unless $Page && $Page > 0;
 
 use RT::Spams;
