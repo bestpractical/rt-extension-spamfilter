@@ -48,19 +48,51 @@
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
+<style type="text/css">
+    .custom-checkbox label {
+        white-space: nowrap;
+    }
+</style>
 <script type="text/javascript">
     jQuery( function() {
-        jQuery('button.create_user').click( function () {
-            url = new URL(window.location.href);
-            status = url.searchParams.get('Status') || 'new';
-            bits = this.name.split('-');
-            window.location.href = '?emailid=' + bits[1] + '&Action=' + bits[0] + '&Status=' + status;
+        // adjust the width of the checkboxes columns since it's not possible
+        // to add specific class to the th element
+        jQuery('#discard_all,#not_spam_all').closest('th').css('width', '1%');
+
+        jQuery('#not_spam_all').change( function () {
+            // toggle all checkboxes
+            jQuery('input.not_spam').prop('checked', this.checked).change();
+            jQuery('#discard_all').prop('checked', false);
         });
-        jQuery('button.discard').click( function () {
-            url = new URL(window.location.href);
-            status = url.searchParams.get('Status') || 'new';
-            bits = this.name.split('-');
-            window.location.href = '?emailid=' + bits[1] + '&Action=' + bits[0] + '&Status=' + status;
+        jQuery('#discard_all').change( function () {
+            // toggle all checkboxes
+            jQuery('input.discard').prop('checked', this.checked).change();
+            jQuery('#not_spam_all').prop('checked', false);
+        });
+        // check if the corresponding Release-X or Delete-X is already checked
+        // and uncheck it
+        jQuery('input.not_spam,input.discard').change( function () {
+            // get id and split it
+            var id = this.id.split('-');
+
+            if (!this.checked) {
+                // disable the oposite checkbox
+                if (id[0] == 'Release') {
+                    jQuery('#not_spam_all').prop('checked', false);
+                } else {
+                    jQuery('#discard_all').prop('checked', false);
+                }
+                return;
+            } else {
+                // disable the oposite checkbox
+                if (id[0] == 'Release') {
+                    jQuery('#Delete-' + id[1]).prop('checked', false);
+                    jQuery('#discard_all').prop('checked', false);
+                } else {
+                    jQuery('#Release-' + id[1]).prop('checked', false);
+                    jQuery('#not_spam_all').prop('checked', false);
+                }
+            }
         });
     });
 </script>
@@ -68,6 +100,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <div class="spams">
+<form method="post" enctype="multipart/form-data" name="SpamUpdate" id="SpamUpdate">
 <& /Elements/CollectionList, 
     Collection => $emails,
     AllowSorting => 1,
@@ -82,10 +115,46 @@
    &>
 </div>
 
+<hr />
+
+<div class="form-row">
+  <div class="col-12">
+    <& /Elements/Submit, Label => loc('Update') &>
+  </div>
+</div>
+
+</form>
+
 <%init>
 
 my @results;
-$Format ||= qq{'<a href="__WebPath__/Tools/SpamFilter/Display.html?id=__id__">__id__</a>/TITLE:#','<a href="__WebPath__/Tools/SpamFilter/Display.html?id=__id__">__Subject__</a>',__From__,__To__,__Status__,__Date__,__Score__,__Disposition__};
+
+unless ($Format) {
+    $Format = qq{
+        '<a href="__WebPath__/Tools/SpamFilter/Display.html?id=__id__">__id__</a>/TITLE:#',
+        '<a href="__WebPath__/Tools/SpamFilter/Display.html?id=__id__">__Subject__</a>',
+        __From__,
+        __To__,
+        __Status__,
+        __Date__,
+        __Score__
+    };
+
+    if (!$Status || $Status eq 'new') {
+        $Format .= qq{
+            __NotSpam__,
+            __Delete__
+        };
+    } elsif ($Status eq 'resolved') {
+        $Format .= qq{
+            __Delete__
+        };
+    } elsif ($Status eq 'deleted') {
+        $Format .= qq{
+            __NotSpam__
+        };
+    }
+}
 
 $Order    ||= 'ASC';
 $OrderBy  ||= 'id';
@@ -96,18 +165,36 @@ $Page = 1 unless $Page && $Page > 0;
 use RT::Spams;
 use RT::Spam;
 
-if ($Action && $emailid) {
-    my $email = RT::Spam->new($session{'CurrentUser'}) ;
-    $email->Load($emailid);
-    if ($email->id) {
-        my ($ret, $msg, $ticket);
-        if ($Action eq 'Delete') {
-            ($ret, $msg) = $email->Delete();
+if ($Delete) {
+    my @ToBeDeleted;
+    if (ref $Delete eq 'ARRAY') {
+        @ToBeDeleted = @$Delete;
+    } else {
+        push @ToBeDeleted, $Delete;
+    };
+    foreach my $id (@ToBeDeleted) {
+        my $email = RT::Spam->new($session{'CurrentUser'}) ;
+        $email->Load($id);
+        if ($email->id) {
+            my ($ret, $msg) = $email->Delete();
             if ($ret) {
                 push(@results, loc('Marked item [_1] as spam', $email->id));
             }
-        } elsif ($Action eq 'Release') {
-            ($ret, $msg, $ticket) = $email->Release(\%session);
+        }
+    }
+}
+if ($Release) {
+    my @ToBeReleased;
+    if (ref $Release eq 'ARRAY') {
+        @ToBeReleased = @$Release;
+    } else {
+        push @ToBeReleased, $Release;
+    };
+    foreach my $id (@ToBeReleased) {
+        my $email = RT::Spam->new($session{'CurrentUser'}) ;
+        $email->Load($id);
+        if ($email->id) {
+            my ($ret, $msg, $ticket) = $email->Release(\%session);
             if ($ret) {
                 push(@results, loc('Marked item [_1] as non-spam and created ticket #[_2]', $email->id, $ticket->Id));
             }
@@ -139,6 +226,6 @@ $Page => 1
 $OrderBy => undef
 $Order => undef
 $Status => 'new'
-$Action => undef,
-$emailid => undef
+$Delete => undef
+$Release => undef
 </%ARGS>

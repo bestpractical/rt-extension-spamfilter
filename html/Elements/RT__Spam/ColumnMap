@@ -53,25 +53,6 @@ $Attr => undef
 
 <%once>
 
-# For readability, ncapsulate the button-generating code into a
-# function here rather than putting it inline in the big hash.
-my $buttons_sub = sub {
-    my ($email) = @_;
-
-    my $ret = '';
-    if ($email->Status ne 'resolved') {
-       $ret .= '<button type="button" class="create_user" name="Release-' . $email->id . '">' . loc('Not Spam') . '</button>';
-    }
-    if ($email->Status ne 'deleted') {
-        $ret .= '&nbsp;<button type="button" class="discard" name="Delete-' . $email->id . '">' . loc('Delete') . '</button>';
-    }
-
-    # Here's a magical thing... if you return a *reference* to a scalar,
-    # the result is not HTML-escaped.  If you just return a scalar, it is.
-    # Hence the \ before $ret.
-    return \$ret;
-};
-
 my $COLUMN_MAP;
 
 $COLUMN_MAP = {
@@ -111,9 +92,49 @@ $COLUMN_MAP = {
         title     => 'Score', # loc
         value     => sub { return $_[0]->Score }
     },
-    Disposition => {
-        title     => 'Disposition', #loc
-        value     => $buttons_sub,
+    NotSpam => {
+        # Here's a magical thing... if you return a *reference* to a scalar,
+        # the result is not HTML-escaped.  If you just return a scalar, it is.
+        # Hence the \ before $ret.
+        title => sub {
+            return \qq{
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" name="not_spam_all" id="not_spam_all" value="1" class="checkbox custom-control-input" />
+  <label class="custom-control-label" for="not_spam_all">Not Spam</label>
+</div>
+};
+        },
+        value => sub {
+            if ( $_[0]->Status ne 'resolved' ) {
+                return \(
+'<div class="custom-control custom-checkbox">
+  <input type="checkbox" name="Release" id="Release-'.$_[0]->id.'" value="'.$_[0]->id.'" class="not_spam checkbox custom-control-input" />
+  <label class="custom-control-label" for="Release-'.$_[0]->id.'"></label>
+</div>');
+            }
+        },
+    },
+    Delete => {
+        # Here's a magical thing... if you return a *reference* to a scalar,
+        # the result is not HTML-escaped.  If you just return a scalar, it is.
+        # Hence the \ before $ret.
+        title => sub {
+            return \qq{
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" name="discard_all" id="discard_all" value="1" class="checkbox custom-control-input" />
+  <label class="custom-control-label" for="discard_all">Delete</label>
+</div>
+};
+        },
+        value => sub {
+            if ( $_[0]->Status ne 'deleted' ) {
+                return \(
+'<div class="custom-control custom-checkbox">
+  <input type="checkbox" name="Delete" id="Delete-'.$_[0]->id.'" value="'.$_[0]->id.'" class="discard checkbox custom-control-input" />
+  <label class="custom-control-label" for="Delete-'.$_[0]->id.'"></label>
+</div>');
+            }
+        },
     },
 };
 
