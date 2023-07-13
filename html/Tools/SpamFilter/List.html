@@ -159,7 +159,7 @@ unless ($Format) {
 $Order    ||= 'ASC';
 $OrderBy  ||= 'id';
 
-$Rows ||= $ARGS{RowsPerPage} || 50;
+$Rows ||= $ARGS{RowsPerPage} || RT->Config->Get('SpamListRowsPerPage') || 50;
 $Page = 1 unless $Page && $Page > 0;
 
 use RT::Spams;
