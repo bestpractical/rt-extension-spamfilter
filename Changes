@@ -1,5 +1,10 @@
 Revision history for RT-Extension-SpamFilter
 
+0.06 2023-07-13
+ - Implement multiple selection of checkboxes holding shift key
+ - Add option to configure rows per page in spam list
+ - Implement checkbox selection for spam filter actions
+
 0.05 2023-07-10
  - Pass search arguments to make OrderBy/Pagination really work
 

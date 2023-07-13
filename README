@@ -27,7 +27,7 @@ INSTALLATION
         If you are upgrading this module, check for upgrading instructions
         in case changes need to be made to your database.
 
-    Patch RT earlier than 5.0.2
+    Patch RT earlier than 5.0.5
             patch -d /opt/rt5 -p1 < patches/0001-Pass-action-info-to-GetCurrentUser-for-email-interfa.patch
 
     Set up spam filter rules (see "CONFIGURATION" for details.)
@@ -62,6 +62,8 @@ CONFIGURATION
             }
         );
 
+        Set($SpamListRowsPerPage, 50);
+
   @SpamFilters
     The @SpamFilters array is an array of hashes. Each hash must contain the
     following keys:
@@ -85,6 +87,10 @@ CONFIGURATION
   $SpamFilterThreshold
     The $SpamFilterThreshold is the score above which an incoming message is
     considered to be spam and placed in the spam list.
+
+  $SpamListRowsPerPage
+    The $SpamListRowsPerPage is an optional configuration to change the
+    number of rows to display per page in the spam list. Default is 50.
 
 AUTHOR
     Best Practical Solutions, LLC <modules@bestpractical.com>
