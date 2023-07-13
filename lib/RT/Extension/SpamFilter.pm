@@ -72,7 +72,7 @@ in your database.
 If you are upgrading this module, check for upgrading instructions
 in case changes need to be made to your database.
 
-=item Patch RT earlier than 5.0.2
+=item Patch RT earlier than 5.0.5
 
     patch -d /opt/rt5 -p1 < patches/0001-Pass-action-info-to-GetCurrentUser-for-email-interfa.patch
 
@@ -113,6 +113,8 @@ is shown below:
         }
     );
 
+    Set($SpamListRowsPerPage, 50);
+
 =head2 C<@SpamFilters>
 
 The C<@SpamFilters> array is an array of hashes.  Each hash
@@ -145,6 +147,11 @@ presence of the spam header and then add the score you configure.
 
 The C<$SpamFilterThreshold> is the score above which an incoming message
 is considered to be spam and placed in the spam list.
+
+=head2 C<$SpamListRowsPerPage>
+
+The C<$SpamListRowsPerPage> is an optional configuration to change the
+number of rows to display per page in the spam list. Default is 50.
 
 =head1 AUTHOR
 
