@@ -25,10 +25,20 @@ sub MessageScore {
     for my $filter ( @filters ) {
         next unless $filter && $filter->{Field} && $filter->{Regex} && $filter->{Score};
         if ( $filter->{Field} eq 'Body' ) {
-            $score += $filter->{Score} if $body =~ $filter->{Regex};
+            if ( $filter->{Operator} && $filter->{Operator} eq 'no-match' ) {
+                $score += $filter->{Score} if $body !~ $filter->{Regex};
+            }
+            else {
+                $score += $filter->{Score} if $body =~ $filter->{Regex};
+            }
         }
         else {
-            $score += $filter->{Score} if $head->get($filter->{Field}) =~ $filter->{Regex};
+            if ( $filter->{Operator} && $filter->{Operator} eq 'no-match' ) {
+                $score += $filter->{Score} if $head->get($filter->{Field}) !~ $filter->{Regex};
+            }
+            else {
+                $score += $filter->{Score} if $head->get($filter->{Field}) =~ $filter->{Regex};
+            }
         }
     }
     return $score;
@@ -110,6 +120,12 @@ is shown below:
             Field => 'Body',
             Regex => qr/download the attachment/i,
             Score => 10
+        },
+        {
+            Field => 'To',
+            Regex => qr/\@example\.com/i,
+            Score => 30,
+            Operator => 'no-match'
         }
     );
 
@@ -135,6 +151,17 @@ by C<Field> (or the email body if C<Field> is 'Body').
 
 A number indicating how many points to add to the
 spam score if the rule matches.
+
+=item C<Operator>
+
+This optional key defaults to 'match', meaning it will evaluate whether
+C<Regex> matches C<Field>. You can set this to 'no-match' to reverse
+the evaluatation and apply the C<Score> if the C<Regex> does not
+match C<Field>. You can use this mode to add spam points for email
+headers that should match an expected value, like your domain in
+the C<To> header, but doesn't. This can happen if a spammer sets the
+C<To> envelope to your domain, but the C<To> header in the email is
+something else.
 
 =back
 

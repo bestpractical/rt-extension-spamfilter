@@ -59,6 +59,12 @@ CONFIGURATION
                 Field => 'Body',
                 Regex => qr/download the attachment/i,
                 Score => 10
+            },
+            {
+                Field => 'To',
+                Regex => qr/\@example\.com/i,
+                Score => 30,
+                Operator => 'no-match'
             }
         );
 
@@ -78,6 +84,16 @@ CONFIGURATION
     Score
         A number indicating how many points to add to the spam score if the
         rule matches.
+
+    Operator
+        This optional key defaults to 'match', meaning it will evaluate
+        whether Regex matches Field. You can set this to 'no-match' to
+        reverse the evaluatation and apply the Score if the Regex does not
+        match Field. You can use this mode to add spam points for email
+        headers that should match an expected value, like your domain in the
+        To header, but doesn't. This can happen if a spammer sets the To
+        envelope to your domain, but the To header in the email is something
+        else.
 
     You can use the configuration above to check for provided spam headers
     as shown in the example above. However, any score provided as a value in
