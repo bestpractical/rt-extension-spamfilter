@@ -1,5 +1,8 @@
 Revision history for RT-Extension-SpamFilter
 
+0.07 2024-05-30
+ - Allow an optional no-match mode for the provided regex
+
 0.06 2023-07-13
  - Implement multiple selection of checkboxes holding shift key
  - Add option to configure rows per page in spam list
