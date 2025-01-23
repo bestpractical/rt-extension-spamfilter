@@ -1,7 +1,4 @@
 <%init>
-return unless $session{'CurrentUser'}->HasRight( Right => 'AdminUsers', Object => RT->System );
-Menu->child("tools")->child( "spam_filter", title => loc("Spam Filter"), path => "/Tools/SpamFilter/List.html");
-
 my $request_path = $HTML::Mason::Commands::r->path_info;
 $request_path =~ s!/{2,}!/!g;
 if ( $request_path =~ m{/Tools/SpamFilter/} ) {

@@ -1,0 +1,4 @@
+<%init>
+return unless $session{'CurrentUser'}->HasRight( Right => 'AdminUsers', Object => RT->System );
+Menu->child("tools")->child( "spam_filter", title => loc("Spam Filter"), path => "/Tools/SpamFilter/List.html");
+</%init>
