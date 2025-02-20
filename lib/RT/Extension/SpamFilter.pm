@@ -5,6 +5,8 @@ package RT::Extension::SpamFilter;
 
 our $VERSION = '0.07';
 
+RT->AddJavaScript('rt-extension-spamfilter.js');
+
 sub MessageScore {
     my $class = shift;
     my $message = shift;
