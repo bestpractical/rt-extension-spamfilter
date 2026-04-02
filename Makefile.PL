@@ -8,8 +8,8 @@ if ( $RT::VERSION =~ /^4\.2/ ) {
     requires_rt_plugin 'RT::Extension::FutureMailgate';
 }
 
-requires_rt '4.0.0';
-rt_too_new '5.2.0';
+requires_rt '6.0.0';
+rt_too_new '6.2.0';
 
 sign;
 WriteAll;
