@@ -3,7 +3,7 @@ use warnings;
 
 package RT::Extension::SpamFilter;
 
-our $VERSION = '0.07';
+our $VERSION = '1.00';
 
 RT->AddJavaScript('rt-extension-spamfilter.js');
 
@@ -60,7 +60,7 @@ Admins can manually handle those spams from /Tools/SpamFilter/List.html
 
 =head1 RT VERSION
 
-Works with RT 4.0, 4.2, 4.4 and 5.0.
+Works with RT 6.0
 
 =head1 INSTALLATION
 
@@ -84,15 +84,11 @@ in your database.
 If you are upgrading this module, check for upgrading instructions
 in case changes need to be made to your database.
 
-=item Patch RT earlier than 5.0.5
-
-    patch -d /opt/rt5 -p1 < patches/0001-Pass-action-info-to-GetCurrentUser-for-email-interfa.patch
-
 =item Set up spam filter rules (see L</"CONFIGURATION"> for details.)
 
 =item Clear your mason cache
 
-    rm -rf /opt/rt5/var/mason_data/obj
+    rm -rf /opt/rt6/var/mason_data/obj
 
 =item Restart your webserver
 
@@ -100,7 +96,7 @@ in case changes need to be made to your database.
 
 =head1 CONFIGURATION
 
-Edit your F</opt/rt5/etc/RT_SiteConfig.pm>; a sample configuration
+Edit your F</opt/rt6/etc/RT_SiteConfig.pm>; a sample configuration
 is shown below:
 
     Plugin('RT::Extension::SpamFilter');
@@ -198,7 +194,7 @@ or via the web at
 
 =head1 LICENSE AND COPYRIGHT
 
-This software is Copyright (c) 2014 Best Practical Solutions, LLC.
+This software is Copyright (c) 2014-2026 Best Practical Solutions, LLC.
 
 This is free software, licensed under:
 
